@@ -1,0 +1,50 @@
+{
+  "name": "vipi-editor",
+  "version": "0.1.0",
+  "description": "Coordinated Vim editing for Pi prompts, inputs, and textareas.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vimhead/vipi-editor.git"
+  },
+  "homepage": "https://github.com/vimhead/vipi-editor#readme",
+  "bugs": {
+    "url": "https://github.com/vimhead/vipi-editor/issues"
+  },
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "vim",
+    "editor"
+  ],
+  "files": [
+    "src",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "exports": {
+    ".": "./src/api.ts",
+    "./api": "./src/api.ts"
+  },
+  "pi": {
+    "extensions": [
+      "./src/extension.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.99.1",
+    "@earendil-works/pi-tui": "^0.99.1",
+    "@types/node": "^26.2.0",
+    "typescript": "^5.9.0"
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "test": "node --import ./tests/loader.mjs --test tests/*.test.mjs",
+    "pack:dry": "npm pack --dry-run"
+  }
+}

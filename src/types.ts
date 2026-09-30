@@ -1,0 +1,24 @@
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type { KeyId } from "@earendil-works/pi-tui";
+
+export type VipiEditorTheme = {
+	fg(role: string, text: string): string;
+	bold(text: string): string;
+	inverse(text: string): string;
+};
+
+export type VipiEditorEventBus = {
+	emit(channel: string, data: unknown): void;
+	on(channel: string, handler: (data: unknown) => void): () => void;
+};
+
+export type VipiEditorExtensionApi = ExtensionAPI;
+
+export type VipiEditorExtensionContext = ExtensionContext;
+
+export type VipiEditorKeybindingsManager = {
+	matches(data: string, keybinding: string): boolean;
+	getKeys(keybinding: string): string[];
+};
+
+export type VipiEditorKeySequence = readonly KeyId[];
