@@ -1,6 +1,6 @@
 # vipi-editor
 
-One Vim editing system for Pi’s prompt, inputs, and textareas, with shared focus, cursor control, and keyboard-layout switching.
+One Vim editing system for Pi’s prompt, inputs, and textareas, with a shared Vim engine, focus coordinator, and cursor control.
 
 ## Install
 
@@ -14,11 +14,9 @@ Use current Pi and Node.js 24+. Reload Pi after installation.
 
 - **Esc** enters normal mode; **i**, **a**, **o**, and **O** enter insert mode.
 - Vim motions, operators, text objects, clipboard editing, and undo work in the editors.
-- In the prompt’s normal mode, **s** opens jump mode and **Space Space** opens the command palette.
 - Closing a field restores the previous editor’s focus; each editor keeps its own text and mode.
-- Keyboard-layout switching uses `macism` on macOS. Set `VIPI_EDITOR_DEFAULT_INPUT_SOURCE` to override `com.apple.keylayout.ABC`.
 
-All features are enabled by default. `/vipi-editor` shows their status. Use `/vipi-editor disable jump-mode`, `command-palette`, or `input-source`; use `enable` to restore a feature, then `/reload`. Choices are saved in `~/.pi/agent/vipi-editor.json`.
+[Jump mode](https://github.com/vimhead/pi-me-jump-mode), [command palette](https://github.com/vimhead/pi-me-command-palette), and [keyboard-layout switching](https://github.com/vimhead/pi-me-input-source) are separate plugins. Install and toggle them individually in `/vipi`.
 
 ## Extension fields
 
