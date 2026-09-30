@@ -4,23 +4,23 @@ import {
 	type TUI,
 } from "@earendil-works/pi-tui";
 import {
-	VIPI_EDITOR_API_VERSION,
-	VIPI_EDITOR_READY,
-	VIPI_EDITOR_RUNTIME_API_REQUEST,
-	VIPI_EDITOR_UNREADY,
+	VIPIR_EDITOR_API_VERSION,
+	VIPIR_EDITOR_READY,
+	VIPIR_EDITOR_RUNTIME_API_REQUEST,
+	VIPIR_EDITOR_UNREADY,
 	type FieldControl,
-	type VipiEditorEventBus,
-	type VipiEditorKeybindingsManager,
-	type VipiEditorRuntimeApi,
-	type VipiEditorTheme,
+	type VipirEditorEventBus,
+	type VipirEditorKeybindingsManager,
+	type VipirEditorRuntimeApi,
+	type VipirEditorTheme,
 } from "./api.ts";
 
 export type { FieldControl } from "./textarea-editor.ts";
 
 export type FieldControlOptions = {
 	readonly tui: TUI;
-	readonly theme: VipiEditorTheme;
-	readonly keybindings: VipiEditorKeybindingsManager;
+	readonly theme: VipirEditorTheme;
+	readonly keybindings: VipirEditorKeybindingsManager;
 	readonly initialValue: string;
 	readonly placeholder: string | undefined;
 	readonly focused: boolean;
@@ -33,30 +33,30 @@ export type FieldControls = {
 	dispose(): void;
 };
 
-export function createFieldControls(pi: { events: VipiEditorEventBus }): FieldControls {
-	let runtimeApi: VipiEditorRuntimeApi | undefined;
+export function createFieldControls(pi: { events: VipirEditorEventBus }): FieldControls {
+	let runtimeApi: VipirEditorRuntimeApi | undefined;
 	let isDisposed = false;
 
 	const requestRuntimeApi = () => {
 		runtimeApi = undefined;
-		pi.events.emit(VIPI_EDITOR_RUNTIME_API_REQUEST, {
-			version: VIPI_EDITOR_API_VERSION,
-			receive(api: VipiEditorRuntimeApi) {
-				if (api.version === VIPI_EDITOR_API_VERSION) runtimeApi = api;
+		pi.events.emit(VIPIR_EDITOR_RUNTIME_API_REQUEST, {
+			version: VIPIR_EDITOR_API_VERSION,
+			receive(api: VipirEditorRuntimeApi) {
+				if (api.version === VIPIR_EDITOR_API_VERSION) runtimeApi = api;
 			},
 		});
 	};
 
-	const requireRuntimeApi = (): VipiEditorRuntimeApi => {
+	const requireRuntimeApi = (): VipirEditorRuntimeApi => {
 		if (isDisposed || !runtimeApi) {
-			throw new Error("Fields require an active vipi-editor session. Enable vipi-editor and create fields after session_start.");
+			throw new Error("Fields require an active vipir-editor session. Enable vipir-editor and create fields after session_start.");
 		}
 		return runtimeApi;
 	};
 
 	requestRuntimeApi();
-	const offReady = pi.events.on(VIPI_EDITOR_READY, requestRuntimeApi);
-	const offUnready = pi.events.on(VIPI_EDITOR_UNREADY, () => {
+	const offReady = pi.events.on(VIPIR_EDITOR_READY, requestRuntimeApi);
+	const offUnready = pi.events.on(VIPIR_EDITOR_UNREADY, () => {
 		runtimeApi = undefined;
 	});
 
@@ -79,7 +79,7 @@ export function createFieldControls(pi: { events: VipiEditorEventBus }): FieldCo
 class ModalInputControl implements FieldControl {
 	private readonly lineEditor;
 
-	constructor(runtimeApi: VipiEditorRuntimeApi, private readonly options: FieldControlOptions) {
+	constructor(runtimeApi: VipirEditorRuntimeApi, private readonly options: FieldControlOptions) {
 		this.lineEditor = runtimeApi.vim.createLineEditor({
 			text: options.initialValue,
 			mode: "insert",
@@ -135,7 +135,7 @@ class ModalInputControl implements FieldControl {
 class ModalTextareaControl implements FieldControl {
 	private readonly textareaEditor;
 
-	constructor(runtimeApi: VipiEditorRuntimeApi, private readonly options: FieldControlOptions) {
+	constructor(runtimeApi: VipirEditorRuntimeApi, private readonly options: FieldControlOptions) {
 		this.textareaEditor = runtimeApi.vim.createTextareaEditor({
 			text: options.initialValue,
 			mode: "insert",
@@ -188,14 +188,14 @@ class ModalTextareaControl implements FieldControl {
 	}
 }
 
-function editorTheme(theme: VipiEditorTheme): EditorTheme {
+function editorTheme(theme: VipirEditorTheme): EditorTheme {
 	return {
 		borderColor: (text) => theme.fg("borderMuted", text),
 		selectList: selectListTheme(theme),
 	};
 }
 
-function selectListTheme(theme: VipiEditorTheme): SelectListTheme {
+function selectListTheme(theme: VipirEditorTheme): SelectListTheme {
 	return {
 		selectedPrefix: (text) => theme.fg("accent", text),
 		selectedText: (text) => theme.fg("accent", text),

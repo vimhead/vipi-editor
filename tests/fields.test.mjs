@@ -2,17 +2,17 @@ import "./loader.mjs";
 import assert from "node:assert/strict";
 import test from "node:test";
 import { CURSOR_MARKER, visibleWidth } from "@earendil-works/pi-tui";
-import { VIPI_EDITOR_READY, VIPI_EDITOR_UNREADY } from "vipi-editor/api";
+import { VIPIR_EDITOR_READY, VIPIR_EDITOR_UNREADY } from "vipir-editor/api";
 import { createFixture } from "./fixture.mjs";
 
 for (const factory of ["createInput", "createTextarea"]) {
   test(`${factory} requires the coordinated session`, context => {
     const fixture = createFixture(context, { ready: false });
-    assert.throws(() => fixture.fields[factory](fixture.options), /active vipi-editor session/);
+    assert.throws(() => fixture.fields[factory](fixture.options), /active vipir-editor session/);
     fixture.activate();
     assert.equal(fixture.fields[factory](fixture.options).getMode(), "insert");
     fixture.stop();
-    assert.throws(() => fixture.fields[factory](fixture.options), /active vipi-editor session/);
+    assert.throws(() => fixture.fields[factory](fixture.options), /active vipir-editor session/);
   });
 
   test(`${factory} retains Vim editing, pending commands, Escape, focus and compact rendering`, context => {
@@ -54,13 +54,13 @@ test("textarea preserves multiline values", context => {
 test("a mismatched API is rejected and factory disposal releases event listeners permanently", context => {
   const fixture = createFixture(context);
   fixture.setVersion(99);
-  assert.throws(() => fixture.fields.createInput(fixture.options), /active vipi-editor session/);
+  assert.throws(() => fixture.fields.createInput(fixture.options), /active vipir-editor session/);
   fixture.setVersion(1);
   fixture.fields.dispose();
-  assert.equal(fixture.emitter.listenerCount(VIPI_EDITOR_READY), 0);
-  assert.equal(fixture.emitter.listenerCount(VIPI_EDITOR_UNREADY), 0);
+  assert.equal(fixture.emitter.listenerCount(VIPIR_EDITOR_READY), 0);
+  assert.equal(fixture.emitter.listenerCount(VIPIR_EDITOR_UNREADY), 0);
   fixture.activate();
-  assert.throws(() => fixture.fields.createInput(fixture.options), /active vipi-editor session/);
+  assert.throws(() => fixture.fields.createInput(fixture.options), /active vipir-editor session/);
 });
 
 test("prompt, input and textarea share exclusive focus with nested restoration", context => {

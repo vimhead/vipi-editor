@@ -4,11 +4,11 @@ import {
 	buildRenderedLineMaps, isPrintableInput, OwnedCustomEditor, VimCore,
 	hardwareCursorForTerminal, hideHardwareCursorDuringRepaint, normalizeRange,
 	patchDroppedPathPasteInput, readSystemClipboard, registerDefaultVimEditing, writeSystemClipboard,
-	type PromptEditor, type VipiEditorModeId, type VipiEditorRenderedLineMap,
-	type VipiEditorServices, type VipiEditorSubmitTextOptions, type VipiEditorTextRange,
+	type PromptEditor, type VipirEditorModeId, type VipirEditorRenderedLineMap,
+	type VipirEditorServices, type VipirEditorSubmitTextOptions, type VipirEditorTextRange,
 	type DefaultVimServices, type HardwareCursor, type VimBufferAdapter, type VimHost,
 } from "./api.ts";
-import { VipiEditorSessionRuntime } from "./session-runtime.ts";
+import { VipirEditorSessionRuntime } from "./session-runtime.ts";
 import type { FocusRegistration } from "./focus.ts";
 
 const ESC_UP = "\x1b[A";
@@ -24,7 +24,7 @@ type PendingRestoreDraft = {
 	text: string;
 };
 
-type ModalEditorServices = VipiEditorServices & DefaultVimServices;
+type ModalEditorServices = VipirEditorServices & DefaultVimServices;
 
 export class ModalEditor extends OwnedCustomEditor implements PromptEditor, VimBufferAdapter {
 	readonly core: VimCore<ModalEditorServices>;
@@ -33,13 +33,13 @@ export class ModalEditor extends OwnedCustomEditor implements PromptEditor, VimB
 
 	get focused(): boolean { return this.focusRegistration?.isFocused ?? false; }
 	set focused(value: boolean) { this.focusRegistration?.setFocused(value); }
-	private yankFlashRange: VipiEditorTextRange | undefined;
+	private yankFlashRange: VipirEditorTextRange | undefined;
 	private yankFlashToken = 0;
 	private yankFlashTimer: ReturnType<typeof setTimeout> | undefined;
 	private visibleEditorBodyRows = 1;
 	private isHandlingBracketedPaste = false;
 
-	private get runtime(): VipiEditorSessionRuntime { return this.options.runtime; }
+	private get runtime(): VipirEditorSessionRuntime { return this.options.runtime; }
 	private get appTheme(): Theme { return this.options.appTheme; }
 	private get appKeybindings(): KeybindingsManager { return this.options.keybindings; }
 
@@ -47,7 +47,7 @@ export class ModalEditor extends OwnedCustomEditor implements PromptEditor, VimB
 		tui: TUI;
 		theme: EditorTheme;
 		keybindings: KeybindingsManager;
-		runtime: VipiEditorSessionRuntime;
+		runtime: VipirEditorSessionRuntime;
 		appTheme: Theme;
 	}) {
 		const { tui, theme, keybindings, runtime } = options;
@@ -62,7 +62,7 @@ export class ModalEditor extends OwnedCustomEditor implements PromptEditor, VimB
 			writeClipboard: writeSystemClipboard,
 			flashRange: (range) => this.flashYankRange(range),
 			onModeChange: () => this.focusRegistration?.publishMode(),
-			notifyError: (message) => this.runtime.ctx.ui.notify(`vipi-editor binding failed: ${message}`, "error"),
+			notifyError: (message) => this.runtime.ctx.ui.notify(`vipir-editor binding failed: ${message}`, "error"),
 		};
 		this.core = new VimCore<ModalEditorServices>(this, host, {
 			mode: "insert",
@@ -98,7 +98,7 @@ export class ModalEditor extends OwnedCustomEditor implements PromptEditor, VimB
 		if (this.yankFlashTimer) clearTimeout(this.yankFlashTimer);
 	}
 
-	getMode(): VipiEditorModeId {
+	getMode(): VipirEditorModeId {
 		return this.core.getMode();
 	}
 
@@ -106,7 +106,7 @@ export class ModalEditor extends OwnedCustomEditor implements PromptEditor, VimB
 		return this.appTheme;
 	}
 
-	setMode(mode: VipiEditorModeId): void {
+	setMode(mode: VipirEditorModeId): void {
 		this.core.setMode(mode);
 	}
 
@@ -114,7 +114,7 @@ export class ModalEditor extends OwnedCustomEditor implements PromptEditor, VimB
 		this.tui.requestRender();
 	}
 
-	async submitText(text: string, options?: VipiEditorSubmitTextOptions): Promise<void> {
+	async submitText(text: string, options?: VipirEditorSubmitTextOptions): Promise<void> {
 		const submittedText = text.trim();
 		const restoreText = options?.restoreText;
 		const token = restoreText !== undefined ? setPendingRestoreDraft(restoreText) : undefined;
@@ -201,7 +201,7 @@ export class ModalEditor extends OwnedCustomEditor implements PromptEditor, VimB
 		return this.renderModeLabel(renderedLines, width, this.modeLabel());
 	}
 
-	private flashYankRange(range: VipiEditorTextRange): void {
+	private flashYankRange(range: VipirEditorTextRange): void {
 		this.yankFlashRange = range;
 		const token = ++this.yankFlashToken;
 		if (this.yankFlashTimer) clearTimeout(this.yankFlashTimer);
@@ -262,8 +262,8 @@ export class ModalEditor extends OwnedCustomEditor implements PromptEditor, VimB
 }
 
 function rangeSegmentForRenderedLine(
-	range: VipiEditorTextRange,
-	map: VipiEditorRenderedLineMap,
+	range: VipirEditorTextRange,
+	map: VipirEditorRenderedLineMap,
 	logicalLineText: string,
 ): { startCol: number; endCol: number } | undefined {
 	const [rangeStart, rangeEnd] = normalizeRange(range);

@@ -1,13 +1,13 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import {
-	VIPI_EDITOR_API_VERSION,
-	type VipiEditorApi,
-	type VipiEditorDispose,
-	type VipiEditorFocusedModeEditor,
-	type VipiEditorFocusedModeHandler,
-	type VipiEditorRegistration,
-	type VipiEditorRuntimeApi,
-	type VipiEditorServices,
+	VIPIR_EDITOR_API_VERSION,
+	type VipirEditorApi,
+	type VipirEditorDispose,
+	type VipirEditorFocusedModeEditor,
+	type VipirEditorFocusedModeHandler,
+	type VipirEditorRegistration,
+	type VipirEditorRuntimeApi,
+	type VipirEditorServices,
 	type PromptEditor,
 } from "./api.ts";
 import { EditorFocusCoordinator } from "./focus.ts";
@@ -16,25 +16,25 @@ import { TextareaEditor, type TextareaEditorOptions } from "./textarea-editor.ts
 import type { DefaultVimServices, VimCore } from "./vim-core.ts";
 
 type SessionPrompt = PromptEditor & {
-	core: VimCore<VipiEditorServices & DefaultVimServices>;
+	core: VimCore<VipirEditorServices & DefaultVimServices>;
 	dispose(): void;
 };
 
 type SessionRuntimeOptions = {
 	pi: ExtensionAPI;
 	ctx: ExtensionContext;
-	registrations: ReadonlyMap<string, VipiEditorRegistration>;
+	registrations: ReadonlyMap<string, VipirEditorRegistration>;
 };
 
-export class VipiEditorSessionRuntime {
+export class VipirEditorSessionRuntime {
 	readonly focus: EditorFocusCoordinator;
 	private readonly cleanupByExtension = new Map<string, DisposeStack>();
-	private readonly focusedModeHandlers = new Set<VipiEditorFocusedModeHandler>();
+	private readonly focusedModeHandlers = new Set<VipirEditorFocusedModeHandler>();
 	private editor: SessionPrompt | undefined;
 	private isDisposed = false;
 
 	constructor(private readonly options: SessionRuntimeOptions) {
-		this.focus = new EditorFocusCoordinator((editor) => this.publishFocusedMode(editor as VipiEditorFocusedModeEditor));
+		this.focus = new EditorFocusCoordinator((editor) => this.publishFocusedMode(editor as VipirEditorFocusedModeEditor));
 	}
 
 	get pi(): ExtensionAPI { return this.options.pi; }
@@ -49,7 +49,7 @@ export class VipiEditorSessionRuntime {
 		for (const registration of this.options.registrations.values()) this.applyRegistration(registration);
 	}
 
-	applyRegistration(registration: VipiEditorRegistration): void {
+	applyRegistration(registration: VipirEditorRegistration): void {
 		this.assertActive();
 		this.cleanupByExtension.get(registration.extensionId)?.dispose();
 		this.cleanupByExtension.delete(registration.extensionId);
@@ -66,9 +66,9 @@ export class VipiEditorSessionRuntime {
 		editor.requestRender();
 	}
 
-	createRuntimeApi(): VipiEditorRuntimeApi {
+	createRuntimeApi(): VipirEditorRuntimeApi {
 		return {
-			version: VIPI_EDITOR_API_VERSION,
+			version: VIPIR_EDITOR_API_VERSION,
 			vim: {
 				createLineEditor: (options) => this.createLineEditor(options),
 				createTextareaEditor: (options) => this.createTextareaEditor(options),
@@ -88,7 +88,7 @@ export class VipiEditorSessionRuntime {
 		this.editor = undefined;
 	}
 
-	private createApi(editor: SessionPrompt, cleanup: DisposeStack): VipiEditorApi {
+	private createApi(editor: SessionPrompt, cleanup: DisposeStack): VipirEditorApi {
 		return {
 			...this.createRuntimeApi(),
 			onDispose: (action) => { cleanup.use(action); },
@@ -111,20 +111,20 @@ export class VipiEditorSessionRuntime {
 		return new TextareaEditor(options, this.focus);
 	}
 
-	private registerFocusedModeHandler(handler: VipiEditorFocusedModeHandler): VipiEditorDispose {
+	private registerFocusedModeHandler(handler: VipirEditorFocusedModeHandler): VipirEditorDispose {
 		this.assertActive();
 		this.focusedModeHandlers.add(handler);
 		const editor = this.focus.getFocusedEditor();
-		if (editor) this.notifyHandler(handler, editor as VipiEditorFocusedModeEditor);
+		if (editor) this.notifyHandler(handler, editor as VipirEditorFocusedModeEditor);
 		return () => { this.focusedModeHandlers.delete(handler); };
 	}
 
-	private publishFocusedMode(editor: VipiEditorFocusedModeEditor): void {
+	private publishFocusedMode(editor: VipirEditorFocusedModeEditor): void {
 		for (const handler of this.focusedModeHandlers) this.notifyHandler(handler, editor);
 	}
 
-	private notifyHandler(handler: VipiEditorFocusedModeHandler, editor: VipiEditorFocusedModeEditor): void {
-		const report = (error: unknown) => this.ctx.ui.notify(`vipi-editor focus handler failed: ${error instanceof Error ? error.message : String(error)}`, "error");
+	private notifyHandler(handler: VipirEditorFocusedModeHandler, editor: VipirEditorFocusedModeEditor): void {
+		const report = (error: unknown) => this.ctx.ui.notify(`vipir-editor focus handler failed: ${error instanceof Error ? error.message : String(error)}`, "error");
 		try {
 			Promise.resolve(handler({ editor, pi: this.pi, ctx: this.ctx, mode: editor.getMode() })).catch(report);
 		} catch (error) {
@@ -133,15 +133,15 @@ export class VipiEditorSessionRuntime {
 	}
 
 	private assertActive(): void {
-		if (this.isDisposed) throw new Error("The vipi-editor session has stopped.");
+		if (this.isDisposed) throw new Error("The vipir-editor session has stopped.");
 	}
 }
 
 class DisposeStack {
-	private readonly actions: VipiEditorDispose[] = [];
+	private readonly actions: VipirEditorDispose[] = [];
 	private isDisposed = false;
 
-	use(action: VipiEditorDispose): VipiEditorDispose {
+	use(action: VipirEditorDispose): VipirEditorDispose {
 		if (this.isDisposed) action();
 		else this.actions.push(action);
 		return action;

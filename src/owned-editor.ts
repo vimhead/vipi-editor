@@ -1,4 +1,4 @@
-import type { VipiEditorKeybindingsManager } from "./types.ts";
+import type { VipirEditorKeybindingsManager } from "./types.ts";
 import {
 	CURSOR_MARKER,
 	SelectList,
@@ -2381,7 +2381,7 @@ function decodePrintableInput(data: string): string | undefined {
 	return parsed?.length === 1 ? parsed : undefined;
 }
 
-type AppAction = Parameters<VipiEditorKeybindingsManager["matches"]>[1];
+type AppAction = Parameters<VipirEditorKeybindingsManager["matches"]>[1];
 
 export class OwnedCustomEditor extends OwnedEditor {
 	public actionHandlers: Map<AppAction, () => void> = new Map();
@@ -2393,7 +2393,7 @@ export class OwnedCustomEditor extends OwnedEditor {
 	constructor(
 		tui: TUI,
 		theme: EditorTheme,
-		private readonly ownedEditorKeybindings: VipiEditorKeybindingsManager,
+		private readonly ownedEditorKeybindings: VipirEditorKeybindingsManager,
 		options?: EditorOptions,
 	) {
 		super(tui, theme, options);

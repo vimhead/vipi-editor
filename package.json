@@ -1,14 +1,14 @@
 {
-  "name": "vipi-editor",
+  "name": "vipir-editor",
   "version": "0.1.0",
   "description": "Coordinated Vim editing for Pi prompts, inputs, and textareas.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vimhead/vipi-editor.git"
+    "url": "git+https://github.com/vimhead/vipir-editor.git"
   },
-  "homepage": "https://github.com/vimhead/vipi-editor#readme",
+  "homepage": "https://github.com/vimhead/vipir-editor#readme",
   "bugs": {
-    "url": "https://github.com/vimhead/vipi-editor/issues"
+    "url": "https://github.com/vimhead/vipir-editor/issues"
   },
   "type": "module",
   "license": "MIT",

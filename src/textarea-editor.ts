@@ -1,4 +1,4 @@
-import type { VipiEditorTheme } from "./types.ts";
+import type { VipirEditorTheme } from "./types.ts";
 import type { EditorFocusCoordinator, FocusRegistration } from "./focus.ts";
 import {
 	decodeKittyPrintable,
@@ -41,7 +41,7 @@ export type TextareaEditorOptions = {
 	mode: VimModeId;
 	tui: TUI;
 	editorTheme: EditorTheme;
-	theme: VipiEditorTheme;
+	theme: VipirEditorTheme;
 	showModeBadge: boolean;
 	focused: boolean;
 	onChange: ((editor: TextareaEditor) => void) | undefined;

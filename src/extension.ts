@@ -1,20 +1,20 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import {
-	VIPI_EDITOR_API_VERSION,
-	VIPI_EDITOR_READY,
-	VIPI_EDITOR_REGISTER,
-	VIPI_EDITOR_RUNTIME_API_REQUEST,
-	VIPI_EDITOR_UNREADY,
-	isVipiEditorRegistration,
-	isVipiEditorRuntimeApiRequest,
-	type VipiEditorRegistration,
+	VIPIR_EDITOR_API_VERSION,
+	VIPIR_EDITOR_READY,
+	VIPIR_EDITOR_REGISTER,
+	VIPIR_EDITOR_RUNTIME_API_REQUEST,
+	VIPIR_EDITOR_UNREADY,
+	isVipirEditorRegistration,
+	isVipirEditorRuntimeApiRequest,
+	type VipirEditorRegistration,
 } from "./api.ts";
 import { ModalEditor, takePendingRestoreDraft } from "./prompt-editor.ts";
-import { VipiEditorSessionRuntime } from "./session-runtime.ts";
+import { VipirEditorSessionRuntime } from "./session-runtime.ts";
 
-export default function vipiEditor(pi: ExtensionAPI): void {
-	const externalRegistrations = new Map<string, VipiEditorRegistration>();
-	let activeRuntime: VipiEditorSessionRuntime | undefined;
+export default function vipirEditor(pi: ExtensionAPI): void {
+	const externalRegistrations = new Map<string, VipirEditorRegistration>();
+	let activeRuntime: VipirEditorSessionRuntime | undefined;
 	let restoreHardwareCursor: (() => void) | undefined;
 
 	const stopRuntime = () => {
@@ -26,23 +26,23 @@ export default function vipiEditor(pi: ExtensionAPI): void {
 		} finally {
 			restoreHardwareCursor?.();
 			restoreHardwareCursor = undefined;
-			pi.events.emit(VIPI_EDITOR_UNREADY, { version: VIPI_EDITOR_API_VERSION });
+			pi.events.emit(VIPIR_EDITOR_UNREADY, { version: VIPIR_EDITOR_API_VERSION });
 		}
 	};
 
-	pi.events.on(VIPI_EDITOR_REGISTER, (data) => {
-		if (!isVipiEditorRegistration(data) || externalRegistrations.get(data.extensionId) === data) return;
+	pi.events.on(VIPIR_EDITOR_REGISTER, (data) => {
+		if (!isVipirEditorRegistration(data) || externalRegistrations.get(data.extensionId) === data) return;
 		externalRegistrations.set(data.extensionId, data);
 		activeRuntime?.applyRegistration(data);
 	});
-	pi.events.on(VIPI_EDITOR_RUNTIME_API_REQUEST, (data) => {
-		if (isVipiEditorRuntimeApiRequest(data) && activeRuntime) data.receive(activeRuntime.createRuntimeApi());
+	pi.events.on(VIPIR_EDITOR_RUNTIME_API_REQUEST, (data) => {
+		if (isVipirEditorRuntimeApiRequest(data) && activeRuntime) data.receive(activeRuntime.createRuntimeApi());
 	});
 
 	pi.on("session_start", async (_event, ctx) => {
 		stopRuntime();
 		if (ctx.mode !== "tui") return;
-		const runtime = new VipiEditorSessionRuntime({ pi, ctx, registrations: externalRegistrations });
+		const runtime = new VipirEditorSessionRuntime({ pi, ctx, registrations: externalRegistrations });
 		activeRuntime = runtime;
 		try {
 			ctx.ui.setEditorComponent((tui, theme, keybindings) => {
@@ -60,7 +60,7 @@ export default function vipiEditor(pi: ExtensionAPI): void {
 				});
 				return editor;
 			});
-			pi.events.emit(VIPI_EDITOR_READY, { version: VIPI_EDITOR_API_VERSION });
+			pi.events.emit(VIPIR_EDITOR_READY, { version: VIPIR_EDITOR_API_VERSION });
 		} catch (error) {
 			stopRuntime();
 			throw error;

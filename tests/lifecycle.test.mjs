@@ -3,17 +3,17 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import vipiEditor from "../src/extension.ts";
+import vipirEditor from "../src/extension.ts";
 import { createFixture } from "./fixture.mjs";
-import { VIPI_EDITOR_READY, VIPI_EDITOR_UNREADY, VIPI_EDITOR_RUNTIME_API_REQUEST, registerVipiEditorExtension } from "vipi-editor/api";
+import { VIPIR_EDITOR_READY, VIPIR_EDITOR_UNREADY, VIPIR_EDITOR_RUNTIME_API_REQUEST, registerVipirEditorExtension } from "vipir-editor/api";
 
 async function setup(context) {
-  const directory = await mkdtemp(join(tmpdir(), "vipi-editor-test-"));
+  const directory = await mkdtemp(join(tmpdir(), "vipir-editor-test-"));
   const previous = process.env.PI_CODING_AGENT_DIR;
   process.env.PI_CODING_AGENT_DIR = directory;
   context.after(async () => { if (previous === undefined) delete process.env.PI_CODING_AGENT_DIR; else process.env.PI_CODING_AGENT_DIR = previous; await rm(directory, { recursive: true, force: true }); });
   const fixture = createFixture(context, { ready: false });
-  fixture.emitter.removeAllListeners(VIPI_EDITOR_RUNTIME_API_REQUEST);
+  fixture.emitter.removeAllListeners(VIPIR_EDITOR_RUNTIME_API_REQUEST);
   const handlers = new Map();
   const commands = new Map();
   fixture.pi.on = (name, handler) => handlers.set(name, handler);
@@ -26,7 +26,7 @@ async function setup(context) {
     prompt = factory(fixture.tui, fixture.editorTheme, fixture.keybindings);
     prompt.focused = true;
   };
-  vipiEditor(fixture.pi);
+  vipirEditor(fixture.pi);
   const stop = () => handlers.get("session_shutdown")({}, fixture.ctx);
   context.after(stop);
   return { ...fixture, directory, handlers, commands, stop, getPrompt: () => prompt, replacePrompt: () => fixture.ctx.ui.setEditorComponent(promptFactory), start: () => handlers.get("session_start")({}, fixture.ctx) };
@@ -35,8 +35,8 @@ async function setup(context) {
 test("editor-only package coordinates API fields, cleans up and restarts", async context => {
   const fixture = await setup(context);
   const events = [];
-  fixture.emitter.on(VIPI_EDITOR_READY, () => events.push("ready"));
-  fixture.emitter.on(VIPI_EDITOR_UNREADY, () => events.push("unready"));
+  fixture.emitter.on(VIPIR_EDITOR_READY, () => events.push("ready"));
+  fixture.emitter.on(VIPIR_EDITOR_UNREADY, () => events.push("unready"));
   await fixture.start();
   assert.equal(fixture.tui.getShowHardwareCursor(), true);
   const prompt = fixture.getPrompt();
@@ -51,7 +51,7 @@ test("editor-only package coordinates API fields, cleans up and restarts", async
   fixture.stop();
   assert.equal(prompt.focused, false);
   assert.equal(fixture.tui.getShowHardwareCursor(), false);
-  assert.throws(() => fixture.fields.createInput(fixture.options), /active vipi-editor session/);
+  assert.throws(() => fixture.fields.createInput(fixture.options), /active vipir-editor session/);
   await fixture.start();
   assert.notEqual(fixture.getPrompt(), prompt);
   assert.equal(fixture.fields.createTextarea(fixture.options).getMode(), "insert");
@@ -62,7 +62,7 @@ test("non-TUI startup never installs an editor or publishes readiness", async co
   const fixture = await setup(context);
   fixture.ctx.mode = "rpc";
   let ready = 0;
-  fixture.emitter.on(VIPI_EDITOR_READY, () => ready++);
+  fixture.emitter.on(VIPIR_EDITOR_READY, () => ready++);
   await fixture.start();
   assert.equal(fixture.getPrompt(), undefined);
   assert.equal(ready, 0);
@@ -84,11 +84,11 @@ for (const timing of ["before-start", "after-start"]) {
       },
     };
     if (timing === "after-start") await fixture.start();
-    const off = registerVipiEditorExtension(fixture.pi, registration);
+    const off = registerVipirEditorExtension(fixture.pi, registration);
     context.after(off);
     if (timing === "before-start") await fixture.start();
     assert.equal(setups, 1);
-    fixture.emitter.emit(VIPI_EDITOR_READY);
+    fixture.emitter.emit(VIPIR_EDITOR_READY);
     assert.equal(setups, 1);
     fixture.getPrompt().handleInput("\x1b");
     fixture.getPrompt().handleInput("z");

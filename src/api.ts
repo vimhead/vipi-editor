@@ -3,9 +3,9 @@ import {
 	parseKey,
 	stripTerminalSequences,
 } from "@earendil-works/pi-tui";
-import type { LineEditor as VipiEditorLineEditor, LineEditorOptions as VipiEditorLineEditorOptions } from "./line-editor.ts";
-import type { FieldControl as VipiEditorFieldControl, TextareaEditorOptions as VipiEditorTextareaEditorOptions } from "./textarea-editor.ts";
-import type { VipiEditorEventBus, VipiEditorExtensionApi, VipiEditorExtensionContext, VipiEditorTheme } from "./types.ts";
+import type { LineEditor as VipirEditorLineEditor, LineEditorOptions as VipirEditorLineEditorOptions } from "./line-editor.ts";
+import type { FieldControl as VipirEditorFieldControl, TextareaEditorOptions as VipirEditorTextareaEditorOptions } from "./textarea-editor.ts";
+import type { VipirEditorEventBus, VipirEditorExtensionApi, VipirEditorExtensionContext, VipirEditorTheme } from "./types.ts";
 import type { VimBinding, VimCommandContext, VimModeDefinition, VimModeLabel } from "./vim-core.ts";
 
 export { HardwareCursor, hardwareCursorForTerminal, hideHardwareCursorDuringRepaint, type HardwareCursorTerminal } from "./hardware-cursor.ts";
@@ -54,29 +54,30 @@ export {
 	type VimTextRange,
 } from "./vim-core.ts";
 
-export const VIPI_EDITOR_API_VERSION = 1;
-export const VIPI_EDITOR_READY = "vipi-editor:v1:ready";
-export const VIPI_EDITOR_UNREADY = "vipi-editor:v1:unready";
-export const VIPI_EDITOR_REGISTER = "vipi-editor:v1:register";
-export const VIPI_EDITOR_RUNTIME_API_REQUEST = "vipi-editor:v1:runtime-api-request";
+// Keep v1 wire channels stable for clients loaded from older package versions.
+export const VIPIR_EDITOR_API_VERSION = 1;
+export const VIPIR_EDITOR_READY = "vipi-editor:v1:ready";
+export const VIPIR_EDITOR_UNREADY = "vipi-editor:v1:unready";
+export const VIPIR_EDITOR_REGISTER = "vipi-editor:v1:register";
+export const VIPIR_EDITOR_RUNTIME_API_REQUEST = "vipi-editor:v1:runtime-api-request";
 
-export type VipiEditorModeId = string;
-export type VipiEditorCursorStyle = "thin" | "block";
-export type VipiEditorDispose = () => void;
-export type { VipiEditorEventBus, VipiEditorExtensionApi, VipiEditorExtensionContext, VipiEditorKeybindingsManager, VipiEditorKeySequence, VipiEditorTheme } from "./types.ts";
+export type VipirEditorModeId = string;
+export type VipirEditorCursorStyle = "thin" | "block";
+export type VipirEditorDispose = () => void;
+export type { VipirEditorEventBus, VipirEditorExtensionApi, VipirEditorExtensionContext, VipirEditorKeybindingsManager, VipirEditorKeySequence, VipirEditorTheme } from "./types.ts";
 
-export type VipiEditorPosition = {
+export type VipirEditorPosition = {
 	line: number;
 	col: number;
 };
 
-export type VipiEditorTextRange = {
-	from: VipiEditorPosition;
-	to: VipiEditorPosition;
+export type VipirEditorTextRange = {
+	from: VipirEditorPosition;
+	to: VipirEditorPosition;
 	linewise?: boolean;
 };
 
-export type VipiEditorRenderedLineMap = {
+export type VipirEditorRenderedLineMap = {
 	outputLine: number;
 	logicalLine: number;
 	startCol: number;
@@ -84,99 +85,141 @@ export type VipiEditorRenderedLineMap = {
 	lineStartCol: number;
 };
 
-export type VipiEditorSubmitTextOptions = {
+export type VipirEditorSubmitTextOptions = {
 	restoreText?: string;
 };
 
 export interface PromptEditor {
 	getText(): string;
 	getLines(): string[];
-	getCursor(): VipiEditorPosition;
-	getMode(): VipiEditorModeId;
-	setMode(mode: VipiEditorModeId): void;
+	getCursor(): VipirEditorPosition;
+	getMode(): VipirEditorModeId;
+	setMode(mode: VipirEditorModeId): void;
 	requestRender(): void;
-	submitText(text: string, options?: VipiEditorSubmitTextOptions): Promise<void>;
+	submitText(text: string, options?: VipirEditorSubmitTextOptions): Promise<void>;
 	runEditorInput(data: string): void;
-	moveToPosition(position: VipiEditorPosition): void;
-	getTheme(): VipiEditorTheme;
+	moveToPosition(position: VipirEditorPosition): void;
+	getTheme(): VipirEditorTheme;
 }
 
-export type VipiEditorServices = {
+export type VipirEditorServices = {
 	editor: PromptEditor;
-	pi: VipiEditorExtensionApi;
-	ctx: VipiEditorExtensionContext;
+	pi: VipirEditorExtensionApi;
+	ctx: VipirEditorExtensionContext;
 };
 
-export type VipiEditorCommandContext = VimCommandContext<VipiEditorServices>;
-export type VipiEditorModeLabel = VimModeLabel<VipiEditorServices>;
-export type VipiEditorModeDefinition = VimModeDefinition<VipiEditorServices>;
-export type VipiEditorBinding = VimBinding<VipiEditorServices>;
-export type VipiEditorFocusedModeEditor = PromptEditor | VipiEditorLineEditor | VipiEditorFieldControl;
-export type VipiEditorFocusedModeEvent = Omit<VipiEditorServices, "editor"> & {
-	editor: VipiEditorFocusedModeEditor;
-	mode: VipiEditorModeId;
+export type VipirEditorCommandContext = VimCommandContext<VipirEditorServices>;
+export type VipirEditorModeLabel = VimModeLabel<VipirEditorServices>;
+export type VipirEditorModeDefinition = VimModeDefinition<VipirEditorServices>;
+export type VipirEditorBinding = VimBinding<VipirEditorServices>;
+export type VipirEditorFocusedModeEditor = PromptEditor | VipirEditorLineEditor | VipirEditorFieldControl;
+export type VipirEditorFocusedModeEvent = Omit<VipirEditorServices, "editor"> & {
+	editor: VipirEditorFocusedModeEditor;
+	mode: VipirEditorModeId;
 };
-export type VipiEditorFocusedModeHandler = (event: VipiEditorFocusedModeEvent) => void | Promise<void>;
+export type VipirEditorFocusedModeHandler = (event: VipirEditorFocusedModeEvent) => void | Promise<void>;
 
-export type VipiEditorApi = {
-	readonly version: typeof VIPI_EDITOR_API_VERSION;
-	onDispose(action: VipiEditorDispose): void;
+export type VipirEditorApi = {
+	readonly version: typeof VIPIR_EDITOR_API_VERSION;
+	onDispose(action: VipirEditorDispose): void;
 	vim: {
-		registerMode(mode: VipiEditorModeDefinition): VipiEditorDispose;
-		registerBinding(modeId: VipiEditorModeId, binding: VipiEditorBinding): VipiEditorDispose;
-		createLineEditor(options: VipiEditorLineEditorOptions): VipiEditorLineEditor;
-		createTextareaEditor(options: VipiEditorTextareaEditorOptions): VipiEditorFieldControl;
-		focusEditor(editor: VipiEditorFocusedModeEditor): void;
-		onFocusedModeChange(handler: VipiEditorFocusedModeHandler): VipiEditorDispose;
+		registerMode(mode: VipirEditorModeDefinition): VipirEditorDispose;
+		registerBinding(modeId: VipirEditorModeId, binding: VipirEditorBinding): VipirEditorDispose;
+		createLineEditor(options: VipirEditorLineEditorOptions): VipirEditorLineEditor;
+		createTextareaEditor(options: VipirEditorTextareaEditorOptions): VipirEditorFieldControl;
+		focusEditor(editor: VipirEditorFocusedModeEditor): void;
+		onFocusedModeChange(handler: VipirEditorFocusedModeHandler): VipirEditorDispose;
 	};
 };
 
-export type VipiEditorRegistration = {
+export type VipirEditorRegistration = {
 	extensionId: string;
-	setup: (api: VipiEditorApi) => void;
+	setup: (api: VipirEditorApi) => void;
 };
 
-export type VipiEditorRuntimeApi = {
-	readonly version: typeof VIPI_EDITOR_API_VERSION;
+export type VipirEditorRuntimeApi = {
+	readonly version: typeof VIPIR_EDITOR_API_VERSION;
 	vim: {
-		createLineEditor(options: VipiEditorLineEditorOptions): VipiEditorLineEditor;
-		createTextareaEditor(options: VipiEditorTextareaEditorOptions): VipiEditorFieldControl;
-		focusEditor(editor: VipiEditorFocusedModeEditor): void;
-		onFocusedModeChange(handler: VipiEditorFocusedModeHandler): VipiEditorDispose;
+		createLineEditor(options: VipirEditorLineEditorOptions): VipirEditorLineEditor;
+		createTextareaEditor(options: VipirEditorTextareaEditorOptions): VipirEditorFieldControl;
+		focusEditor(editor: VipirEditorFocusedModeEditor): void;
+		onFocusedModeChange(handler: VipirEditorFocusedModeHandler): VipirEditorDispose;
 	};
 };
 
-export type VipiEditorRuntimeApiRequest = {
-	version: typeof VIPI_EDITOR_API_VERSION;
-	receive: (api: VipiEditorRuntimeApi) => void;
+export type VipirEditorRuntimeApiRequest = {
+	version: typeof VIPIR_EDITOR_API_VERSION;
+	receive: (api: VipirEditorRuntimeApi) => void;
 };
 
-export type VipiEditorReadyEvent = {
-	version: typeof VIPI_EDITOR_API_VERSION;
+export type VipirEditorReadyEvent = {
+	version: typeof VIPIR_EDITOR_API_VERSION;
 };
 
-export function defineVipiEditorExtension(registration: VipiEditorRegistration): VipiEditorRegistration {
+export function defineVipirEditorExtension(registration: VipirEditorRegistration): VipirEditorRegistration {
 	return registration;
 }
 
-export function registerVipiEditorExtension(pi: { events: VipiEditorEventBus }, registration: VipiEditorRegistration): VipiEditorDispose {
-	const emit = () => pi.events.emit(VIPI_EDITOR_REGISTER, registration);
+export function registerVipirEditorExtension(pi: { events: VipirEditorEventBus }, registration: VipirEditorRegistration): VipirEditorDispose {
+	const emit = () => pi.events.emit(VIPIR_EDITOR_REGISTER, registration);
 	emit();
-	const offReady = pi.events.on(VIPI_EDITOR_READY, emit);
+	const offReady = pi.events.on(VIPIR_EDITOR_READY, emit);
 	return () => offReady();
 }
 
-export function isVipiEditorRegistration(value: unknown): value is VipiEditorRegistration {
+export function isVipirEditorRegistration(value: unknown): value is VipirEditorRegistration {
 	if (!value || typeof value !== "object") return false;
 	const candidate = value as { extensionId?: unknown; setup?: unknown };
 	return typeof candidate.extensionId === "string" && candidate.extensionId.length > 0 && typeof candidate.setup === "function";
 }
 
-export function isVipiEditorRuntimeApiRequest(value: unknown): value is VipiEditorRuntimeApiRequest {
+export function isVipirEditorRuntimeApiRequest(value: unknown): value is VipirEditorRuntimeApiRequest {
 	if (!value || typeof value !== "object") return false;
 	const candidate = value as { version?: unknown; receive?: unknown };
-	return candidate.version === VIPI_EDITOR_API_VERSION && typeof candidate.receive === "function";
+	return candidate.version === VIPIR_EDITOR_API_VERSION && typeof candidate.receive === "function";
 }
+
+export {
+	VIPIR_EDITOR_API_VERSION as VIPI_EDITOR_API_VERSION,
+	VIPIR_EDITOR_READY as VIPI_EDITOR_READY,
+	VIPIR_EDITOR_UNREADY as VIPI_EDITOR_UNREADY,
+	VIPIR_EDITOR_REGISTER as VIPI_EDITOR_REGISTER,
+	VIPIR_EDITOR_RUNTIME_API_REQUEST as VIPI_EDITOR_RUNTIME_API_REQUEST,
+	defineVipirEditorExtension as defineVipiEditorExtension,
+	registerVipirEditorExtension as registerVipiEditorExtension,
+	isVipirEditorRegistration as isVipiEditorRegistration,
+	isVipirEditorRuntimeApiRequest as isVipiEditorRuntimeApiRequest,
+};
+export type {
+	VipirEditorModeId as VipiEditorModeId,
+	VipirEditorCursorStyle as VipiEditorCursorStyle,
+	VipirEditorDispose as VipiEditorDispose,
+	VipirEditorPosition as VipiEditorPosition,
+	VipirEditorTextRange as VipiEditorTextRange,
+	VipirEditorRenderedLineMap as VipiEditorRenderedLineMap,
+	VipirEditorSubmitTextOptions as VipiEditorSubmitTextOptions,
+	VipirEditorServices as VipiEditorServices,
+	VipirEditorCommandContext as VipiEditorCommandContext,
+	VipirEditorModeLabel as VipiEditorModeLabel,
+	VipirEditorModeDefinition as VipiEditorModeDefinition,
+	VipirEditorBinding as VipiEditorBinding,
+	VipirEditorFocusedModeEditor as VipiEditorFocusedModeEditor,
+	VipirEditorFocusedModeEvent as VipiEditorFocusedModeEvent,
+	VipirEditorFocusedModeHandler as VipiEditorFocusedModeHandler,
+	VipirEditorApi as VipiEditorApi,
+	VipirEditorRegistration as VipiEditorRegistration,
+	VipirEditorRuntimeApi as VipiEditorRuntimeApi,
+	VipirEditorRuntimeApiRequest as VipiEditorRuntimeApiRequest,
+	VipirEditorReadyEvent as VipiEditorReadyEvent,
+};
+export type {
+	VipirEditorTheme as VipiEditorTheme,
+	VipirEditorEventBus as VipiEditorEventBus,
+	VipirEditorExtensionApi as VipiEditorExtensionApi,
+	VipirEditorExtensionContext as VipiEditorExtensionContext,
+	VipirEditorKeybindingsManager as VipiEditorKeybindingsManager,
+	VipirEditorKeySequence as VipiEditorKeySequence,
+} from "./types.ts";
 
 export function isPrintableInput(data: string): boolean {
 	return getPrintableInput(data) !== undefined;
@@ -190,8 +233,8 @@ export function getPrintableInput(data: string): string | undefined {
 	return parsed?.length === 1 ? parsed : undefined;
 }
 
-export function buildRenderedLineMaps(bodyLines: string[], logicalLines: string[]): VipiEditorRenderedLineMap[] {
-	const maps: VipiEditorRenderedLineMap[] = [];
+export function buildRenderedLineMaps(bodyLines: string[], logicalLines: string[]): VipirEditorRenderedLineMap[] {
+	const maps: VipirEditorRenderedLineMap[] = [];
 	const nextSearchCol = new Map<number, number>();
 
 	for (const [bodyIndex, bodyLine] of bodyLines.entries()) {
@@ -216,8 +259,8 @@ function findRenderedContent(
 	strippedBodyLine: string,
 	logicalLines: string[],
 	nextSearchCol: Map<number, number>,
-): Omit<VipiEditorRenderedLineMap, "outputLine"> | undefined {
-	let best: Omit<VipiEditorRenderedLineMap, "outputLine"> | undefined;
+): Omit<VipirEditorRenderedLineMap, "outputLine"> | undefined {
+	let best: Omit<VipirEditorRenderedLineMap, "outputLine"> | undefined;
 	for (const [logicalLine, logicalText] of logicalLines.entries()) {
 		const from = nextSearchCol.get(logicalLine) ?? 0;
 		for (let startCol = from; startCol <= logicalText.length; startCol++) {

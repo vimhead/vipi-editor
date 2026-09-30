@@ -1,4 +1,4 @@
-import type { VipiEditorTheme } from "./types.ts";
+import type { VipirEditorTheme } from "./types.ts";
 import type { EditorFocusCoordinator, FocusRegistration } from "./focus.ts";
 import {
 	CURSOR_MARKER,
@@ -32,7 +32,7 @@ export type LineEditorOptions = {
 	text?: string;
 	mode?: VimModeId;
 	placeholder?: string;
-	theme?: VipiEditorTheme;
+	theme?: VipirEditorTheme;
 	tui?: Pick<TUI, "terminal">;
 	showModeBadge?: boolean;
 	focused?: boolean;
@@ -44,7 +44,7 @@ export type LineEditorOptions = {
 
 export type LineEditorRenderOptions = {
 	placeholder?: string;
-	theme?: VipiEditorTheme;
+	theme?: VipirEditorTheme;
 	focused?: boolean;
 	showModeBadge?: boolean;
 };
@@ -230,12 +230,12 @@ export class LineEditor implements Component, Focusable {
 		return text.slice(this.view, this.view + avail);
 	}
 
-	private renderTextSlice(slice: string, offset: number, cursor: number, marker: string, theme: VipiEditorTheme | undefined): string {
+	private renderTextSlice(slice: string, offset: number, cursor: number, marker: string, theme: VipirEditorTheme | undefined): string {
 		const cursorInSlice = clamp(cursor - offset, 0, slice.length);
 		return `${this.renderRange(slice, offset, 0, cursorInSlice, theme)}${marker}${this.renderRange(slice, offset, cursorInSlice, slice.length, theme)}`;
 	}
 
-	private renderRange(slice: string, offset: number, from: number, to: number, theme: VipiEditorTheme | undefined): string {
+	private renderRange(slice: string, offset: number, from: number, to: number, theme: VipirEditorTheme | undefined): string {
 		const flash = this.flashRange;
 		if (!flash) return safeText(slice.slice(from, to));
 		const [flashStart, flashEnd] = normalizeRange(flash);
@@ -293,11 +293,11 @@ function safeText(text: string): string {
 	return stripTerminalSequences(text);
 }
 
-function styleMuted(theme: VipiEditorTheme | undefined, text: string): string {
+function styleMuted(theme: VipirEditorTheme | undefined, text: string): string {
 	return theme ? theme.fg("muted", text) : text;
 }
 
-function styleAccent(theme: VipiEditorTheme | undefined, text: string): string {
+function styleAccent(theme: VipirEditorTheme | undefined, text: string): string {
 	return theme ? theme.fg("accent", theme.bold(text)) : text;
 }
 

@@ -23,7 +23,7 @@ export class EditorFocusCoordinator {
 	constructor(private readonly onFocusedMode: (editor: FocusTarget) => void) {}
 
 	register(options: FocusEntry): FocusRegistration {
-		if (this.isDisposed) throw new Error("The vipi-editor session has stopped.");
+		if (this.isDisposed) throw new Error("The vipir-editor session has stopped.");
 		const entry = options;
 		this.entries.add(entry);
 		const coordinator = this;
