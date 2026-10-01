@@ -16,7 +16,7 @@ Use current Pi and Node.js 24+. Reload Pi after installation.
 - Vim motions, operators, text objects, clipboard editing, and undo work in the editors.
 - Closing a field restores the previous editor’s focus; each editor keeps its own text and mode.
 
-[Jump mode](https://github.com/vimhead/vipir-jump), [command palette](https://github.com/vimhead/vipir-palette), and [keyboard-layout switching](https://github.com/vimhead/vipir-input-source) are separate plugins. Install and toggle them individually in `/vipir`.
+[Jump mode](https://github.com/vimhead/vipir-jump-mode), [command palette](https://github.com/vimhead/vipir-command-palette), and [keyboard-layout switching](https://github.com/vimhead/vipir-input-source) are separate plugins. Install and toggle them individually in `/vipir`.
 
 ## Extension fields
 
