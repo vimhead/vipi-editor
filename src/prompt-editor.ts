@@ -16,7 +16,7 @@ const ESC_DOWN = "\x1b[B";
 const LINE_START = "\x01";
 const LINE_END = "\x05";
 const UNDO = "\x1f";
-const RESTORE_DRAFT_KEY = Symbol.for("vipi-editor.pendingRestoreDraft");
+const RESTORE_DRAFT_KEY = Symbol.for("vipir-editor.pendingRestoreDraft");
 let restoreDraftToken = 0;
 
 type PendingRestoreDraft = {

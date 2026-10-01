@@ -17,8 +17,8 @@ export type HardwareCursorTerminal = {
 type HardwareCursorRegistry = WeakMap<HardwareCursorTerminal, HardwareCursor>;
 type PatchedTerminalRegistry = WeakSet<HardwareCursorTerminal>;
 
-const HARDWARE_CURSOR_REGISTRY_KEY = Symbol.for("vipi-editor.hardwareCursorRegistry");
-const PATCHED_TERMINAL_REGISTRY_KEY = Symbol.for("vipi-editor.patchedTerminalRegistry");
+const HARDWARE_CURSOR_REGISTRY_KEY = Symbol.for("vipir-editor.hardwareCursorRegistry");
+const PATCHED_TERMINAL_REGISTRY_KEY = Symbol.for("vipir-editor.patchedTerminalRegistry");
 
 export class HardwareCursor {
 	private currentStyle: VimCursorStyle | undefined;

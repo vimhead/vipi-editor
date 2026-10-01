@@ -54,12 +54,11 @@ export {
 	type VimTextRange,
 } from "./vim-core.ts";
 
-// Keep v1 wire channels stable for clients loaded from older package versions.
 export const VIPIR_EDITOR_API_VERSION = 1;
-export const VIPIR_EDITOR_READY = "vipi-editor:v1:ready";
-export const VIPIR_EDITOR_UNREADY = "vipi-editor:v1:unready";
-export const VIPIR_EDITOR_REGISTER = "vipi-editor:v1:register";
-export const VIPIR_EDITOR_RUNTIME_API_REQUEST = "vipi-editor:v1:runtime-api-request";
+export const VIPIR_EDITOR_READY = "vipir-editor:v1:ready";
+export const VIPIR_EDITOR_UNREADY = "vipir-editor:v1:unready";
+export const VIPIR_EDITOR_REGISTER = "vipir-editor:v1:register";
+export const VIPIR_EDITOR_RUNTIME_API_REQUEST = "vipir-editor:v1:runtime-api-request";
 
 export type VipirEditorModeId = string;
 export type VipirEditorCursorStyle = "thin" | "block";
@@ -178,48 +177,6 @@ export function isVipirEditorRuntimeApiRequest(value: unknown): value is VipirEd
 	const candidate = value as { version?: unknown; receive?: unknown };
 	return candidate.version === VIPIR_EDITOR_API_VERSION && typeof candidate.receive === "function";
 }
-
-export {
-	VIPIR_EDITOR_API_VERSION as VIPI_EDITOR_API_VERSION,
-	VIPIR_EDITOR_READY as VIPI_EDITOR_READY,
-	VIPIR_EDITOR_UNREADY as VIPI_EDITOR_UNREADY,
-	VIPIR_EDITOR_REGISTER as VIPI_EDITOR_REGISTER,
-	VIPIR_EDITOR_RUNTIME_API_REQUEST as VIPI_EDITOR_RUNTIME_API_REQUEST,
-	defineVipirEditorExtension as defineVipiEditorExtension,
-	registerVipirEditorExtension as registerVipiEditorExtension,
-	isVipirEditorRegistration as isVipiEditorRegistration,
-	isVipirEditorRuntimeApiRequest as isVipiEditorRuntimeApiRequest,
-};
-export type {
-	VipirEditorModeId as VipiEditorModeId,
-	VipirEditorCursorStyle as VipiEditorCursorStyle,
-	VipirEditorDispose as VipiEditorDispose,
-	VipirEditorPosition as VipiEditorPosition,
-	VipirEditorTextRange as VipiEditorTextRange,
-	VipirEditorRenderedLineMap as VipiEditorRenderedLineMap,
-	VipirEditorSubmitTextOptions as VipiEditorSubmitTextOptions,
-	VipirEditorServices as VipiEditorServices,
-	VipirEditorCommandContext as VipiEditorCommandContext,
-	VipirEditorModeLabel as VipiEditorModeLabel,
-	VipirEditorModeDefinition as VipiEditorModeDefinition,
-	VipirEditorBinding as VipiEditorBinding,
-	VipirEditorFocusedModeEditor as VipiEditorFocusedModeEditor,
-	VipirEditorFocusedModeEvent as VipiEditorFocusedModeEvent,
-	VipirEditorFocusedModeHandler as VipiEditorFocusedModeHandler,
-	VipirEditorApi as VipiEditorApi,
-	VipirEditorRegistration as VipiEditorRegistration,
-	VipirEditorRuntimeApi as VipiEditorRuntimeApi,
-	VipirEditorRuntimeApiRequest as VipiEditorRuntimeApiRequest,
-	VipirEditorReadyEvent as VipiEditorReadyEvent,
-};
-export type {
-	VipirEditorTheme as VipiEditorTheme,
-	VipirEditorEventBus as VipiEditorEventBus,
-	VipirEditorExtensionApi as VipiEditorExtensionApi,
-	VipirEditorExtensionContext as VipiEditorExtensionContext,
-	VipirEditorKeybindingsManager as VipiEditorKeybindingsManager,
-	VipirEditorKeySequence as VipiEditorKeySequence,
-} from "./types.ts";
 
 export function isPrintableInput(data: string): boolean {
 	return getPrintableInput(data) !== undefined;

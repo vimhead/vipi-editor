@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 
 const BRACKETED_PASTE_START = "\x1b[200~";
 const BRACKETED_PASTE_END = "\x1b[201~";
-const PATCHED_STDIN_BUFFER_REGISTRY_KEY = Symbol.for("vipi-editor.patchedDroppedPathStdinBufferRegistry");
+const PATCHED_STDIN_BUFFER_REGISTRY_KEY = Symbol.for("vipir-editor.patchedDroppedPathStdinBufferRegistry");
 
 type StdinBufferInput = string | Buffer;
 
